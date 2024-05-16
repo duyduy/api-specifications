@@ -8,6 +8,10 @@ servers:
 paths:
   /cart/calculate:
     post:
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
+        - $ref: '#/components/parameters/TenantIdentifyHeader'
+        - $ref: '#/components/parameters/ContentTypeHeader'
       summary: Calculate cart values
       description: Pass the entire basket to the NCR promotional engine to return accurate cart-level calculations.
       requestBody:
@@ -30,6 +34,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
+  parameters:
+    CarNumberInPath:
+      in: path
+      name: CardNumber
+      description: 'The CardNumber. It is a loyalty card returned by a third-party provider, such as Clutch or Retalix.'
+      required: true
+      schema:
+        type: string
+    AuthorizationHeader:
+      in: header
+      name: Authorization
+      required: true
+      schema:
+        type: string
+        example: Bearer your-access-token
+      description: 'Bearer token for authorization. Format: ''Bearer $accessToken'', where $accessToken is obtained from ''api/Token'' endpoint.'
+    TenantIdentifyHeader:
+      in: header
+      name: TenantIdentify
+      required: true
+      schema:
+        type: string
+        example: MCT
+      description: 'Tenant identifier, which must be ''MCT''.'
+    ContentTypeHeader:
+      in: header
+      name: Content-Type
+      required: true
+      schema:
+        type: string
+        enum:
+          - application/json
+      description: Specifies the format of the payload being sent. Must be 'application/json' for this endpoint.
   schemas:
     CartCalculationRequest:
       type: object
