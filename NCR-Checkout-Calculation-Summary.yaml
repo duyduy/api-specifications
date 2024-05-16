@@ -1,0 +1,160 @@
+openapi: 3.0.3
+info:
+  title: Cart Calculation API
+  description: API for calculating cart values including item-level savings and digital deal references.
+  version: 1.0.0
+servers:
+  - url: 'https://api.example.com/v1'
+paths:
+  /cart/calculate:
+    post:
+      summary: Calculate cart values
+      description: Pass the entire basket to the NCR promotional engine to return accurate cart-level calculations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartCalculationRequest'
+      responses:
+        '200':
+          description: Successful response with cart calculations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartCalculationResponse'
+        '500':
+          description: NCR promotional engine is down or an error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    CartCalculationRequest:
+      type: object
+      properties:
+        basket:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasketItem'
+        promoCodes:
+          type: array
+          items:
+            type: string
+          description: A list of promotional codes applied to the cart.
+      required:
+        - basket
+    BasketItem:
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: The unique identifier for the item.
+        quantity:
+          type: integer
+          description: The quantity of the item.
+        price:
+          type: number
+          format: float
+          description: The price of the item.
+        originalPrice:
+          type: number
+          format: float
+          description: The original price of the item before any discounts.
+        promotion:
+          type: string
+          description: 'The promotional offer applied to the item, e.g., "2 for $5.00".'
+        dealType:
+          type: integer
+          description: |
+            The type of deal applied to the item:
+            - 2: Price
+            - 3: Price for multiple
+            - 4: Price weight
+            - 7: Percentage off
+            - 8: Buy X, Get Y
+            - 9: Everyday Low Price (FE labeling - no calculation)
+        minQuantity:
+          type: integer
+          description: The minimum quantity required for the promotion.
+        maxQuantity:
+          type: integer
+          description: The maximum quantity allowed for the promotion.
+        promoCodes:
+          type: array
+          items:
+            type: string
+          description: A list of promotional codes applied to the item.
+    CartCalculationResponse:
+      type: object
+      properties:
+        estimatedSubtotal:
+          type: number
+          format: float
+          description: The estimated subtotal before any discounts.
+        itemDiscounts:
+          type: number
+          format: float
+          description: Total item discounts applied.
+        digitalDeals:
+          type: number
+          format: float
+          description: Total digital deals applied.
+        subtotalAfterDiscounts:
+          type: number
+          format: float
+          description: The subtotal after discounts are applied.
+        estimatedTotal:
+          type: number
+          format: float
+          description: The estimated total after all calculations.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalculatedItem'
+    CalculatedItem:
+      type: object
+      properties:
+        dealType:
+          type: integer
+          description: |
+            The type of deal applied to the item:
+            - 2: Price
+            - 3: Price for multiple
+            - 4: Price weight
+            - 7: Percentage off
+            - 8: Buy X, Get Y
+            - 9: Everyday Low Price (FE labeling - no calculation)
+        itemId:
+          type: string
+          description: The unique identifier for the item.
+        quantity:
+          type: integer
+          description: The quantity of the item.
+        originalPrice:
+          type: number
+          format: float
+          description: The original price of the item before any discounts.
+        calculatedPrice:
+          type: number
+          format: float
+          description: The calculated price after applying promotions.
+        promotion:
+          type: string
+          description: 'The promotional offer applied to the item, e.g., "2 for $5.00".'
+        strikeThroughPrice:
+          type: number
+          format: float
+          description: The original price to be displayed with a strikethrough.
+        promoCodes:
+          type: array
+          items:
+            type: string
+          description: A list of promotional codes applied to the item.
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message.
