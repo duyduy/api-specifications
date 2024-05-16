@@ -1,0 +1,279 @@
+openapi: 3.0.3
+info:
+  title: Cart Calculation API
+  description: API for calculating cart values including item-level savings and digital
+    deal references.
+  version: 1.0.0
+servers:
+- url: https://api.dxp.mercatus.com/v1
+paths:
+  /cart/calculate:
+    post:
+      summary: Calculate cart values
+      parameters:
+      - $ref: '#/components/parameters/AuthorizationHeader'
+      - $ref: '#/components/parameters/TenantIdentifyHeader'
+      - $ref: '#/components/parameters/ContentTypeHeader'
+      description: Pass the entire basket to the NCR promotional engine to return
+        accurate cart-level calculations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                basket:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemId:
+                        type: string
+                        description: The unique identifier for the item.
+                      quantity:
+                        type: integer
+                        description: The quantity of the item.
+                      price:
+                        type: number
+                        format: float
+                        description: The price of the item.
+                      originalPrice:
+                        type: number
+                        format: float
+                        description: The original price of the item before any discounts.
+                      promotion:
+                        type: string
+                        description: The promotional offer applied to the item, e.g.,
+                          "2 for $11.98".
+                promoCodes:
+                  type: array
+                  items:
+                    type: string
+                  description: A list of promotional codes applied to the cart.
+              required:
+              - basket
+      responses:
+        '200':
+          description: Successful response with cart calculations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estimatedSubtotal:
+                    type: number
+                    format: float
+                    description: The estimated subtotal before any discounts.
+                  itemDiscounts:
+                    type: number
+                    format: float
+                    description: Total item discounts applied.
+                  digitalDeals:
+                    type: number
+                    format: float
+                    description: Total digital deals applied.
+                  subtotalAfterDiscounts:
+                    type: number
+                    format: float
+                    description: The subtotal after discounts are applied.
+                  estimatedTotal:
+                    type: number
+                    format: float
+                    description: The estimated total after all calculations.
+        '500':
+          description: NCR promotional engine is down or an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+  /item/calculate:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
+        - $ref: '#/components/parameters/TenantIdentifyHeader'
+        - $ref: '#/components/parameters/ContentTypeHeader'
+      summary: Calculate item-level promotional details
+      description: Pass the entire basket to the NCR promotional engine to return
+        accurate item-level calculations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                basket:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemId:
+                        type: string
+                        description: The unique identifier for the item.
+                      quantity:
+                        type: integer
+                        description: The quantity of the item.
+                      price:
+                        type: number
+                        format: float
+                        description: The price of the item.
+                      originalPrice:
+                        type: number
+                        format: float
+                        description: The original price of the item before any discounts.
+                      promotion:
+                        type: string
+                        description: The promotional offer applied to the item, e.g.,
+                          "2 for $5.00".
+                      dealType:
+                        type: string
+                        description: The type of deal applied to the item, e.g., "2
+                          - Price", "3 - Price for multiple", etc.
+                      minQuantity:
+                        type: integer
+                        description: The minimum quantity required for the promotion.
+                      maxQuantity:
+                        type: integer
+                        description: The maximum quantity allowed for the promotion.
+                      promoCodes:
+                        type: array
+                        items:
+                          type: string
+                        description: A list of promotional codes applied to the item.
+              required:
+              - basket
+      responses:
+        '200':
+          description: Successful response with item calculations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        itemId:
+                          type: string
+                          description: The unique identifier for the item.
+                        quantity:
+                          type: integer
+                          description: The quantity of the item.
+                        originalPrice:
+                          type: number
+                          format: float
+                          description: The original price of the item before any discounts.
+                        calculatedPrice:
+                          type: number
+                          format: float
+                          description: The calculated price after applying promotions.
+                        promotion:
+                          type: string
+                          description: The promotional offer applied to the item,
+                            e.g., "2 for $5.00".
+                        dealType:
+                          type: string
+                          description: The type of deal applied to the item.
+                        strikeThroughPrice:
+                          type: number
+                          format: float
+                          description: The original price to be displayed with a strikethrough.
+                        promoCodes:
+                          type: array
+                          items:
+                            type: string
+                          description: A list of promotional codes applied to the
+                            item.
+        '500':
+          description: NCR promotional engine is down or an error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+components:
+  parameters:
+    AuthorizationHeader:
+      in: header
+      name: Authorization
+      required: true
+      schema:
+        type: string
+        example: Bearer your-access-token
+      description: 'Bearer token for authorization. Format: ''Bearer $accessToken'',
+        where $accessToken is obtained from ''api/Token'' endpoint.'
+    TenantIdentifyHeader:
+      in: header
+      name: TenantIdentify
+      required: true
+      schema:
+        type: string
+        example: MCT
+      description: Tenant identifier, which must be 'MCT'.
+    ContentTypeHeader:
+      in: header
+      name: Content-Type
+      required: true
+      schema:
+        type: string
+        enum:
+        - application/json
+      description: Specifies the format of the payload being sent. Must be 'application/json'
+        for this endpoint.
+  schemas:
+    BasketItem:
+      type: object
+      properties:
+        itemId:
+          type: string
+          description: The unique identifier for the item.
+        quantity:
+          type: integer
+          description: The quantity of the item.
+        price:
+          type: number
+          format: float
+          description: The price of the item.
+        originalPrice:
+          type: number
+          format: float
+          description: The original price of the item before any discounts.
+        promotion:
+          type: string
+          description: The promotional offer applied to the item, e.g., "2 for $11.98".
+    CartCalculationResponse:
+      type: object
+      properties:
+        estimatedSubtotal:
+          type: number
+          format: float
+          description: The estimated subtotal before any discounts.
+        itemDiscounts:
+          type: number
+          format: float
+          description: Total item discounts applied.
+        digitalDeals:
+          type: number
+          format: float
+          description: Total digital deals applied.
+        subtotalAfterDiscounts:
+          type: number
+          format: float
+          description: The subtotal after discounts are applied.
+        estimatedTotal:
+          type: number
+          format: float
+          description: The estimated total after all calculations.
+        error:
+          type: string
+          description: Error message if any.
