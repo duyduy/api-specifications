@@ -85,44 +85,74 @@ components:
     BasketItem:
       type: object
       properties:
-        itemId:
+        itemCode:
           type: string
-          description: The unique identifier for the item.
+          description: 'Unique item code either UPC or SKU. If there is no item code, then an empty string should be sent.'
         quantity:
-          type: integer
-          description: The quantity of the item.
-        price:
+          type: object
+          properties:
+            unitType:
+              type: string
+              enum:
+                - SIMPLE_QUANTITY
+                - GRAMS
+                - GRAINS
+                - OUNCES
+                - POUNDS
+                - STONES
+                - KILOGRAMS
+                - TONS_LONG
+                - TONS_METRIC
+                - CENTILITER
+                - CUBIC_CENTIMETER
+                - CUBIC_DECIMETER
+                - CUBIC_DECAMETER
+                - CUBIC_FOOT
+                - CUBIC_INCH
+                - CUBIC_METER
+                - CUBIC_MILLIMETER
+                - CUBIC_YARD
+                - DECILITER
+                - DRAM
+                - GALLON_UK
+                - GALLON_US_DRY
+                - GALLON_US_LIQUID
+                - GILL_UK
+                - GILL_US
+                - IMPERIAL_GALLON
+                - JIGGER
+                - KILOLITER
+                - LITER
+                - MILLILITER
+                - OUNCE_UK_LIQUID
+                - OUNCE_US_LIQUID
+                - PINT_UK
+                - PINT_US_DRY
+                - PINT_US_LIQUID
+                - QUART_UK
+                - QUART_US_DRY
+                - QUART_US_LIQUID
+                - SHOT
+                - YARDS
+                - METERS
+                - SQUARE_YARDS
+                - SQUARE_METERS
+                - GENERIC_UNIT_SALES
+              description: 'Type of Unit of Measure , , example for 2 items of "$2.99 ea" we use "SIMPLE_QUANTITY"'
+            units:
+              type: number
+              description: Amount of quantity under consideration for transaction
+              example: 2
+          required:
+            - unitType
+            - units
+        unitPrice:
           type: number
           format: float
-          description: The price of the item.
-        originalPrice:
-          type: number
-          format: float
-          description: The original price of the item before any discounts.
-        promotion:
-          type: string
-          description: 'The promotional offer applied to the item, e.g., "2 for $5.00".'
-        dealType:
-          type: integer
-          description: |
-            The type of deal applied to the item:
-            - 2: Price
-            - 3: Price for multiple
-            - 4: Price weight
-            - 7: Percentage off
-            - 8: Buy X, Get Y
-            - 9: Everyday Low Price (FE labeling - no calculation)
-        minQuantity:
-          type: integer
-          description: The minimum quantity required for the promotion.
-        maxQuantity:
-          type: integer
-          description: The maximum quantity allowed for the promotion.
-        promoCodes:
-          type: array
-          items:
-            type: string
-          description: A list of promotional codes applied to the item.
+          description: 'Unit selling price for Item , example "$2.99 ea" => the unitPrice is 2.99'
+          example: 2.99
+      required:
+        - itemCode
     CartCalculationResponse:
       type: object
       properties:
