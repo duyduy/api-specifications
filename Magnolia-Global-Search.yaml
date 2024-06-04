@@ -115,7 +115,7 @@ paths:
           description: Invalid input
         '500':
           description: Server error
-  /api/v1/spell-check:
+  /api/v1/spell-check1:
     get:
       summary: Spell check
       description: Provide spell check suggestions for a misspelled query.
@@ -141,3 +141,60 @@ paths:
           description: Invalid input
         '500':
           description: Server error
+  /v1/spell-check:
+    get:
+      summary: Spell-Check
+      description: Detect misspelled words and provide suggestions for corrected spellings.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Query to check for spelling mistakes
+      responses:
+        '200':
+          description: Successful response with corrected query and suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  corrected_query:
+                    type: string
+                    description: Corrected query
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+                    description: List of suggested corrected queries
+                example:
+                  corrected_query: chocolate
+                  suggestions:
+                    - chocolate
+                    - chocolate milk
+                    - chocolate chips
+        '400':
+          description: 'Invalid request, likely due to missing or incorrect parameters'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                example:
+                  error: Query parameter 'q' is required.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                example:
+                  error: Internal server error. Please try again later.
