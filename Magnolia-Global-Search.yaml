@@ -115,32 +115,6 @@ paths:
           description: Invalid input
         '500':
           description: Server error
-  /api/v1/spell-check1:
-    get:
-      summary: Spell check
-      description: Provide spell check suggestions for a misspelled query.
-      parameters:
-        - in: query
-          name: q
-          schema:
-            type: string
-          description: The misspelled query.
-      responses:
-        '200':
-          description: Spell check suggestions
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  suggestions:
-                    type: array
-                    items:
-                      type: string
-        '400':
-          description: Invalid input
-        '500':
-          description: Server error
   /v1/spell-check:
     get:
       summary: Spell-Check
