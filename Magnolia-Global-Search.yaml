@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: Search API
+  description: 'API for handling various search functionalities including keyword search, popular searches, and autocomplete.'
+  version: 1.0.0
+servers:
+  - url: 'https://api.example.com'
+paths:
+  /api/v1/search:
+    get:
+      summary: Search products
+      description: 'Search for products based on different criteria like keywords, categories, brands, etc.'
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: The search keyword or query.
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum:
+              - price_asc
+              - price_desc
+          description: Sort order of the results.
+      responses:
+        '200':
+          description: Successful search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                        brand:
+                          type: string
+                        price:
+                          type: number
+                        rating:
+                          type: number
+                        image:
+                          type: string
+                  facets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        values:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              value:
+                                type: string
+                              count:
+                                type: integer
+        '400':
+          description: Invalid input
+        '404':
+          description: No results found
+  /api/v1/popular-searches:
+    get:
+      summary: Get popular searches
+      description: Retrieve a list of popular search terms.
+      responses:
+        '200':
+          description: A list of popular searches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  popularSearches:
+                    type: array
+                    items:
+                      type: string
+        '500':
+          description: Server error
+  /api/v1/autocomplete:
+    get:
+      summary: Autocomplete suggestions
+      description: Get autocomplete suggestions based on partial input.
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: The partial input for which to retrieve suggestions.
+      responses:
+        '200':
+          description: Autocomplete suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+  /api/v1/spell-check:
+    get:
+      summary: Spell check
+      description: Provide spell check suggestions for a misspelled query.
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: The misspelled query.
+      responses:
+        '200':
+          description: Spell check suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
