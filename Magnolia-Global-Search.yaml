@@ -67,6 +67,10 @@ paths:
                                 type: string
                               count:
                                 type: integer
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
         '400':
           description: Invalid input
         '404':
