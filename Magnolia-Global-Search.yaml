@@ -11,73 +11,142 @@ paths:
       summary: Search products
       description: 'Search for products based on different criteria like keywords, categories, brands, etc.'
       parameters:
-        - in: query
-          name: q
+        - description: Keyword to search for
+          in: query
+          name: keyword
+          required: false
           schema:
             type: string
-          description: The search keyword or query.
-        - in: query
-          name: sort
+        - description: Category to filter products
+          in: query
+          name: category
+          required: false
           schema:
             type: string
+        - description: Brand to filter products
+          in: query
+          name: brand
+          required: false
+          schema:
+            type: string
+        - description: Minimum price range filter
+          in: query
+          name: min_price
+          required: false
+          schema:
+            format: float
+            type: number
+        - description: Maximum price range filter
+          in: query
+          name: max_price
+          required: false
+          schema:
+            format: float
+            type: number
+        - description: 'Field to sort by (e.g., price, popularity, rating)'
+          in: query
+          name: sort_by
+          required: false
+          schema:
             enum:
-              - price_asc
-              - price_desc
-          description: Sort order of the results.
+              - price
+              - popularity
+              - rating
+            type: string
+        - description: Sort order (asc or desc)
+          in: query
+          name: order
+          required: false
+          schema:
+            enum:
+              - asc
+              - desc
+            type: string
       responses:
         '200':
           description: Successful search results
           content:
             application/json:
               schema:
-                type: object
                 properties:
+                  facets:
+                    properties:
+                      brands:
+                        items:
+                          properties:
+                            doc_count:
+                              type: integer
+                            key:
+                              type: string
+                          type: object
+                        type: array
+                      categories:
+                        items:
+                          properties:
+                            doc_count:
+                              type: integer
+                            key:
+                              type: string
+                          type: object
+                        type: array
+                    type: object
                   results:
-                    type: array
                     items:
-                      type: object
                       properties:
-                        id:
-                          type: string
-                        name:
+                        brand:
                           type: string
                         category:
                           type: string
-                        brand:
+                        description:
                           type: string
-                        price:
-                          type: number
-                        rating:
-                          type: number
-                        image:
-                          type: string
-                  facets:
-                    type: array
-                    items:
-                      type: object
-                      properties:
                         name:
                           type: string
-                        values:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              value:
-                                type: string
-                              count:
-                                type: integer
-                  suggestions:
+                        popularity:
+                          type: integer
+                        price:
+                          format: float
+                          type: number
+                        product_id:
+                          type: string
+                        rating:
+                          format: float
+                          type: number
+                      type: object
                     type: array
-                    items:
-                      type: string
+                type: object
         '400':
           description: Invalid input
         '404':
           description: No results found
+        '500':
+          description: Internal server error
+  /api/v1/autocomplete:
+    get:
+      description: Get autocomplete suggestions based on partial input. It includes detecting misspelled words and providing suggestions for corrected spellings if needed.
+      parameters:
+        - description: The partial input for which to retrieve suggestions.
+          in: query
+          name: q
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Autocomplete suggestions
+          content:
+            application/json:
+              schema:
+                properties:
+                  suggestions:
+                    items:
+                      type: string
+                    type: array
+                type: object
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
   /api/v1/popular-searches:
     get:
-      summary: Get popular searches
       description: 'Provides a list of commonly searched terms that appear as soon as the search field is activated. This helps users quickly find popular results, even before they start typing. It''s based on searches from all users, making it useful for first-time users to see what others are searching for'
       responses:
         '200':
@@ -85,37 +154,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 properties:
                   popularSearches:
-                    type: array
                     items:
                       type: string
-        '500':
-          description: Server error
-  /api/v1/autocomplete:
-    get:
-      summary: Autocomplete suggestions
-      description: Get autocomplete suggestions based on partial input. It includes detecting misspelled words and providing suggestions for corrected spellings if needed.
-      parameters:
-        - in: query
-          name: q
-          schema:
-            type: string
-          description: The partial input for which to retrieve suggestions.
-      responses:
-        '200':
-          description: Autocomplete suggestions
-          content:
-            application/json:
-              schema:
+                    type: array
                 type: object
-                properties:
-                  suggestions:
-                    type: array
-                    items:
-                      type: string
-        '400':
-          description: Invalid input
         '500':
           description: Server error
