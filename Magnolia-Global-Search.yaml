@@ -14,21 +14,50 @@ paths:
         - description: Keyword to search for
           in: query
           name: keyword
+          required: true
+          schema:
+            type: string
+        - description: Language for the search results
+          in: query
+          name: language
           required: false
           schema:
             type: string
+            default: en
+            enum:
+              - en
+              - es
+              - fr
+              - de
+              - it
+              - pt
+              - zh
+              - ja
+              - ko
+              - ru
+              - ar
         - description: Category to filter products
           in: query
           name: category
           required: false
           schema:
-            type: string
+            type: array
+            items:
+              type: string
+            example:
+              - Dairy & Eggs
+              - Bakery
         - description: Brand to filter products
           in: query
           name: brand
           required: false
           schema:
-            type: string
+            type: array
+            items:
+              type: string
+            example:
+              - Banana Boat
+              - Beech-Nut
         - description: Minimum price range filter
           in: query
           name: min_price
@@ -62,58 +91,148 @@ paths:
               - asc
               - desc
             type: string
+        - description: Filter by promotions
+          in: query
+          name: promotions
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - On Sale
+              - Buy More Save More
+        - description: Filter by department
+          in: query
+          name: department
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - Bakery
+              - Grocery
+        - description: Filter by dietary interest
+          in: query
+          name: dietary_interest
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - Gluten Free
+              - Organic
+        - description: Filter by EBT eligibility
+          in: query
+          name: ebt_eligibility
+          required: false
+          schema:
+            type: boolean
+        - description: Filter by availability online
+          in: query
+          name: available_online
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successful search results
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   facets:
-                    properties:
-                      brands:
-                        items:
-                          properties:
-                            doc_count:
-                              type: integer
-                            key:
-                              type: string
-                          type: object
-                        type: array
-                      categories:
-                        items:
-                          properties:
-                            doc_count:
-                              type: integer
-                            key:
-                              type: string
-                          type: object
-                        type: array
                     type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      promotions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      brands:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      department:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      dietary_interest:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      ebt_eligibility:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      available_online:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
                   results:
+                    type: array
                     items:
+                      type: object
                       properties:
+                        product_id:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
                         brand:
                           type: string
                         category:
                           type: string
-                        description:
-                          type: string
-                        name:
-                          type: string
+                        price:
+                          type: number
+                          format: float
+                        rating:
+                          type: number
+                          format: float
                         popularity:
                           type: integer
-                        price:
-                          format: float
-                          type: number
-                        product_id:
-                          type: string
-                        rating:
-                          format: float
-                          type: number
-                      type: object
-                    type: array
-                type: object
         '400':
           description: Invalid input
         '404':
@@ -154,11 +273,11 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   popularSearches:
+                    type: array
                     items:
                       type: string
-                    type: array
-                type: object
         '500':
           description: Server error
