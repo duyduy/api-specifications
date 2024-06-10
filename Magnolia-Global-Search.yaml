@@ -239,7 +239,7 @@ paths:
           description: No results found
         '500':
           description: Internal server error
-  /api/v1/autocomplete:
+  /api/v1/search/autocomplete:
     get:
       description: Get autocomplete suggestions based on partial input. It includes detecting misspelled words and providing suggestions for corrected spellings if needed.
       parameters:
@@ -264,7 +264,7 @@ paths:
           description: Invalid input
         '500':
           description: Server error
-  /api/v1/popular-searches:
+  /api/v1/search/popular-searches:
     get:
       description: 'Provides a list of commonly searched terms that appear as soon as the search field is activated. This helps users quickly find popular results, even before they start typing. It''s based on searches from all users, making it useful for first-time users to see what others are searching for'
       responses:
