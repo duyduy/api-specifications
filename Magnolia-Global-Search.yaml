@@ -328,21 +328,232 @@ components:
           items:
             type: object
             properties:
+              is_active:
+                type: boolean
+              is_visible:
+                type: boolean
+              is_searchable:
+                type: boolean
+              is_elevated:
+                type: boolean
+              is_display_only:
+                type: boolean
+              is_ebt_eligible:
+                type: boolean
+              is_ebt_cash_eligible:
+                type: boolean
+              is_out_of_stock:
+                type: boolean
+              is_for_sale_online:
+                type: boolean
               product_id:
-                type: string
-              name:
-                type: string
-              description:
-                type: string
-              brand:
-                type: string
-              category:
-                type: string
-              price:
-                type: number
-                format: float
-              rating:
-                type: number
-                format: float
-              popularity:
                 type: integer
+              gtin:
+                type: string
+              branch_id:
+                type: integer
+              product_branch_id:
+                type: integer
+              price:
+                type: string
+              min_price:
+                type: string
+              max_price:
+                type: string
+              currency:
+                type: string
+              unit_price_uom:
+                type: string
+              uom_unit_price_uom:
+                type: object
+                additionalProperties:
+                  type: string
+              purchasing_uom_id:
+                type: integer
+              purchasing_uom_abbrev:
+                type: object
+                additionalProperties:
+                  type: string
+              purchasing_uom_plural:
+                type: object
+                additionalProperties:
+                  type: string
+              pricing_uom_id:
+                type: integer
+              pricing_uom_abbrev:
+                type: object
+                additionalProperties:
+                  type: string
+              pricing_uom_plural:
+                type: object
+                additionalProperties:
+                  type: string
+              uom_conversion_factor:
+                type: string
+              tax_amount:
+                type: number
+                format: float
+              aisle_id:
+                type: integer
+              aisle_name:
+                type: object
+                additionalProperties:
+                  type: string
+              aisle_sort:
+                type: integer
+              rank:
+                type: integer
+              title:
+                type: object
+                additionalProperties:
+                  type: string
+              brand:
+                type: object
+                additionalProperties:
+                  type: string
+              product_options:
+                type: array
+                items:
+                  type: object
+              size:
+                type: object
+                additionalProperties:
+                  type: string
+              categories:
+                type: object
+                properties:
+                  level1:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: object
+                        additionalProperties:
+                          type: string
+                  level2:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: object
+                        additionalProperties:
+                          type: string
+              description:
+                type: object
+                additionalProperties:
+                  type: string
+              details:
+                type: object
+                additionalProperties:
+                  type: string
+              images:
+                type: array
+                items:
+                  type: string
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: object
+                      additionalProperties:
+                        type: string
+              collections:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: object
+                      additionalProperties:
+                        type: string
+              campaigns:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: object
+                      additionalProperties:
+                        type: string
+              product_type_id:
+                type: integer
+              product_type:
+                type: string
+              product_parent:
+                type: array
+                items:
+                  type: object
+              product_children:
+                type: array
+                items:
+                  type: object
+              product_twins:
+                type: array
+                items:
+                  type: object
+              is_age_restricted:
+                type: boolean
+              age_restricted_age:
+                type: integer
+                nullable: true
+              deals:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: object
+                      additionalProperties:
+                        type: string
+              modified_ts:
+                type: string
+                format: date-time
+              indexed_ts:
+                type: string
+                format: date-time
+              attributes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    attribute_id:
+                      type: integer
+                    attribute_name:
+                      type: string
+                    attribute_location_name:
+                      type: string
+                    attribute_location_status:
+                      type: integer
+                    attribute_is_fulfillment:
+                      type: integer
+                    attribute_is_exclusive:
+                      type: integer
+                    attribute_settings:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          setting_name:
+                            type: string
+                          setting_value:
+                            type: string
+                          setting_description:
+                            type: string
+                          setting_type:
+                            type: string
+                    attribute_product_status_org:
+                      type: integer
+                    attribute_product_status_location:
+                      type: integer
