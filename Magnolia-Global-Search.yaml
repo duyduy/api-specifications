@@ -11,26 +11,439 @@ paths:
       summary: Search Products
       description: 'Search for products based on different criteria such as keywords, categories, brands, etc.'
       parameters:
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/language'
-        - $ref: '#/components/parameters/category'
-        - $ref: '#/components/parameters/brand'
-        - $ref: '#/components/parameters/min_price'
-        - $ref: '#/components/parameters/max_price'
-        - $ref: '#/components/parameters/sort_by'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/promotions'
-        - $ref: '#/components/parameters/department'
-        - $ref: '#/components/parameters/dietary_interest'
-        - $ref: '#/components/parameters/ebt_eligibility'
-        - $ref: '#/components/parameters/available_online'
+        - name: keyword
+          in: query
+          description: Keyword to search for
+          required: true
+          schema:
+            type: string
+        - name: language
+          in: query
+          description: Language for the search results
+          required: false
+          schema:
+            type: string
+            default: en
+            enum:
+              - en
+              - es
+              - fr
+              - de
+              - it
+              - pt
+              - zh
+              - ja
+              - ko
+              - ru
+              - ar
+        - name: category
+          in: query
+          description: Category to filter products
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - Dairy & Eggs
+              - Bakery
+        - name: brand
+          in: query
+          description: Brand to filter products
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - Banana Boat
+              - Beech-Nut
+        - name: min_price
+          in: query
+          description: Minimum price range filter
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: max_price
+          in: query
+          description: Maximum price range filter
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: sort_by
+          in: query
+          description: 'Field to sort by (e.g., price, popularity, rating)'
+          required: false
+          schema:
+            type: string
+            enum:
+              - price
+              - popularity
+              - rating
+        - name: order
+          in: query
+          description: Sort order (asc or desc)
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: promotions
+          in: query
+          description: Filter by promotions
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - On Sale
+              - Buy More Save More
+        - name: department
+          in: query
+          description: Filter by department
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - Bakery
+              - Grocery
+        - name: dietary_interest
+          in: query
+          description: Filter by dietary interest
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - Gluten Free
+              - Organic
+        - name: ebt_eligibility
+          in: query
+          description: Filter by EBT eligibility
+          required: false
+          schema:
+            type: boolean
+        - name: available_online
+          in: query
+          description: Filter by availability online
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successful search results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchResults'
+                type: object
+                properties:
+                  facets:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      promotions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      brands:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      department:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      dietary_interest:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      ebt_eligibility:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                      available_online:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            doc_count:
+                              type: integer
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        is_active:
+                          type: boolean
+                        is_visible:
+                          type: boolean
+                        is_searchable:
+                          type: boolean
+                        is_elevated:
+                          type: boolean
+                        is_display_only:
+                          type: boolean
+                        is_ebt_eligible:
+                          type: boolean
+                        is_ebt_cash_eligible:
+                          type: boolean
+                        is_out_of_stock:
+                          type: boolean
+                        is_for_sale_online:
+                          type: boolean
+                        product_id:
+                          type: integer
+                        gtin:
+                          type: string
+                        branch_id:
+                          type: integer
+                        product_branch_id:
+                          type: integer
+                        price:
+                          type: string
+                        min_price:
+                          type: string
+                        max_price:
+                          type: string
+                        currency:
+                          type: string
+                        unit_price_uom:
+                          type: string
+                        uom_unit_price_uom:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        purchasing_uom_id:
+                          type: integer
+                        purchasing_uom_abbrev:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        purchasing_uom_plural:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        pricing_uom_id:
+                          type: integer
+                        pricing_uom_abbrev:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        pricing_uom_plural:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        uom_conversion_factor:
+                          type: string
+                        tax_amount:
+                          type: number
+                          format: float
+                        aisle_id:
+                          type: integer
+                        aisle_name:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        aisle_sort:
+                          type: integer
+                        rank:
+                          type: integer
+                        title:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        brand:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        product_options:
+                          type: array
+                          items:
+                            type: object
+                        size:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        categories:
+                          type: object
+                          properties:
+                            level1:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                name:
+                                  type: object
+                                  additionalProperties:
+                                    type: string
+                            level2:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                name:
+                                  type: object
+                                  additionalProperties:
+                                    type: string
+                        description:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        details:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        images:
+                          type: array
+                          items:
+                            type: string
+                        tags:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              name:
+                                type: object
+                                additionalProperties:
+                                  type: string
+                        collections:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              name:
+                                type: object
+                                additionalProperties:
+                                  type: string
+                        campaigns:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              name:
+                                type: object
+                                additionalProperties:
+                                  type: string
+                        product_type_id:
+                          type: integer
+                        product_type:
+                          type: string
+                        product_parent:
+                          type: array
+                          items:
+                            type: object
+                        product_children:
+                          type: array
+                          items:
+                            type: object
+                        product_twins:
+                          type: array
+                          items:
+                            type: object
+                        is_age_restricted:
+                          type: boolean
+                        age_restricted_age:
+                          type: integer
+                          nullable: true
+                        deals:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              name:
+                                type: object
+                                additionalProperties:
+                                  type: string
+                        modified_ts:
+                          type: string
+                          format: date-time
+                        indexed_ts:
+                          type: string
+                          format: date-time
+                        attributes:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              attribute_id:
+                                type: integer
+                              attribute_name:
+                                type: string
+                              attribute_location_name:
+                                type: string
+                              attribute_location_status:
+                                type: integer
+                              attribute_is_fulfillment:
+                                type: integer
+                              attribute_is_exclusive:
+                                type: integer
+                              attribute_settings:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    setting_name:
+                                      type: string
+                                    setting_value:
+                                      type: string
+                                    setting_description:
+                                      type: string
+                                    setting_type:
+                                      type: string
+                              attribute_product_status_org:
+                                type: integer
+                              attribute_product_status_location:
+                                type: integer
         '400':
           description: Invalid input
         '404':
@@ -42,26 +455,26 @@ paths:
       summary: Get All Search Filters
       description: 'Retrieve all facets (filters) for rendering on the frontend, including categories, promotions, brands, and departments.'
       parameters:
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/language'
-        - $ref: '#/components/parameters/category'
-        - $ref: '#/components/parameters/brand'
-        - $ref: '#/components/parameters/min_price'
-        - $ref: '#/components/parameters/max_price'
-        - $ref: '#/components/parameters/sort_by'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/promotions'
-        - $ref: '#/components/parameters/department'
-        - $ref: '#/components/parameters/dietary_interest'
-        - $ref: '#/components/parameters/ebt_eligibility'
-        - $ref: '#/components/parameters/available_online'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/0'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/1'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/2'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/3'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/4'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/5'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/6'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/7'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/8'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/9'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/10'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/11'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/12'
       responses:
         '200':
           description: Successful retrieval of filters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchResults'
+                $ref: '#/paths/~1api~1v1~1search/get/responses/200/content/application~1json/schema'
         '400':
           description: Invalid input
         '404':
@@ -113,447 +526,3 @@ paths:
                       type: string
         '500':
           description: Server error
-components:
-  parameters:
-    keyword:
-      name: keyword
-      in: query
-      description: Keyword to search for
-      required: true
-      schema:
-        type: string
-    language:
-      name: language
-      in: query
-      description: Language for the search results
-      required: false
-      schema:
-        type: string
-        default: en
-        enum:
-          - en
-          - es
-          - fr
-          - de
-          - it
-          - pt
-          - zh
-          - ja
-          - ko
-          - ru
-          - ar
-    category:
-      name: category
-      in: query
-      description: Category to filter products
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-        example:
-          - Dairy & Eggs
-          - Bakery
-    brand:
-      name: brand
-      in: query
-      description: Brand to filter products
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-        example:
-          - Banana Boat
-          - Beech-Nut
-    min_price:
-      name: min_price
-      in: query
-      description: Minimum price range filter
-      required: false
-      schema:
-        type: number
-        format: float
-    max_price:
-      name: max_price
-      in: query
-      description: Maximum price range filter
-      required: false
-      schema:
-        type: number
-        format: float
-    sort_by:
-      name: sort_by
-      in: query
-      description: 'Field to sort by (e.g., price, popularity, rating)'
-      required: false
-      schema:
-        type: string
-        enum:
-          - price
-          - popularity
-          - rating
-    order:
-      name: order
-      in: query
-      description: Sort order (asc or desc)
-      required: false
-      schema:
-        type: string
-        enum:
-          - asc
-          - desc
-    promotions:
-      name: promotions
-      in: query
-      description: Filter by promotions
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-        example:
-          - On Sale
-          - Buy More Save More
-    department:
-      name: department
-      in: query
-      description: Filter by department
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-        example:
-          - Bakery
-          - Grocery
-    dietary_interest:
-      name: dietary_interest
-      in: query
-      description: Filter by dietary interest
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-        example:
-          - Gluten Free
-          - Organic
-    ebt_eligibility:
-      name: ebt_eligibility
-      in: query
-      description: Filter by EBT eligibility
-      required: false
-      schema:
-        type: boolean
-    available_online:
-      name: available_online
-      in: query
-      description: Filter by availability online
-      required: false
-      schema:
-        type: boolean
-  schemas:
-    SearchResults:
-      type: object
-      properties:
-        facets:
-          type: object
-          properties:
-            categories:
-              type: array
-              items:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  doc_count:
-                    type: integer
-            promotions:
-              type: array
-              items:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  doc_count:
-                    type: integer
-            brands:
-              type: array
-              items:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  doc_count:
-                    type: integer
-            department:
-              type: array
-              items:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  doc_count:
-                    type: integer
-            dietary_interest:
-              type: array
-              items:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  doc_count:
-                    type: integer
-            ebt_eligibility:
-              type: array
-              items:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  doc_count:
-                    type: integer
-            available_online:
-              type: array
-              items:
-                type: object
-                properties:
-                  key:
-                    type: string
-                  doc_count:
-                    type: integer
-        results:
-          type: array
-          items:
-            type: object
-            properties:
-              is_active:
-                type: boolean
-              is_visible:
-                type: boolean
-              is_searchable:
-                type: boolean
-              is_elevated:
-                type: boolean
-              is_display_only:
-                type: boolean
-              is_ebt_eligible:
-                type: boolean
-              is_ebt_cash_eligible:
-                type: boolean
-              is_out_of_stock:
-                type: boolean
-              is_for_sale_online:
-                type: boolean
-              product_id:
-                type: integer
-              gtin:
-                type: string
-              branch_id:
-                type: integer
-              product_branch_id:
-                type: integer
-              price:
-                type: string
-              min_price:
-                type: string
-              max_price:
-                type: string
-              currency:
-                type: string
-              unit_price_uom:
-                type: string
-              uom_unit_price_uom:
-                type: object
-                additionalProperties:
-                  type: string
-              purchasing_uom_id:
-                type: integer
-              purchasing_uom_abbrev:
-                type: object
-                additionalProperties:
-                  type: string
-              purchasing_uom_plural:
-                type: object
-                additionalProperties:
-                  type: string
-              pricing_uom_id:
-                type: integer
-              pricing_uom_abbrev:
-                type: object
-                additionalProperties:
-                  type: string
-              pricing_uom_plural:
-                type: object
-                additionalProperties:
-                  type: string
-              uom_conversion_factor:
-                type: string
-              tax_amount:
-                type: number
-                format: float
-              aisle_id:
-                type: integer
-              aisle_name:
-                type: object
-                additionalProperties:
-                  type: string
-              aisle_sort:
-                type: integer
-              rank:
-                type: integer
-              title:
-                type: object
-                additionalProperties:
-                  type: string
-              brand:
-                type: object
-                additionalProperties:
-                  type: string
-              product_options:
-                type: array
-                items:
-                  type: object
-              size:
-                type: object
-                additionalProperties:
-                  type: string
-              categories:
-                type: object
-                properties:
-                  level1:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: object
-                        additionalProperties:
-                          type: string
-                  level2:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      name:
-                        type: object
-                        additionalProperties:
-                          type: string
-              description:
-                type: object
-                additionalProperties:
-                  type: string
-              details:
-                type: object
-                additionalProperties:
-                  type: string
-              images:
-                type: array
-                items:
-                  type: string
-              tags:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: object
-                      additionalProperties:
-                        type: string
-              collections:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: object
-                      additionalProperties:
-                        type: string
-              campaigns:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: object
-                      additionalProperties:
-                        type: string
-              product_type_id:
-                type: integer
-              product_type:
-                type: string
-              product_parent:
-                type: array
-                items:
-                  type: object
-              product_children:
-                type: array
-                items:
-                  type: object
-              product_twins:
-                type: array
-                items:
-                  type: object
-              is_age_restricted:
-                type: boolean
-              age_restricted_age:
-                type: integer
-                nullable: true
-              deals:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: object
-                      additionalProperties:
-                        type: string
-              modified_ts:
-                type: string
-                format: date-time
-              indexed_ts:
-                type: string
-                format: date-time
-              attributes:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    attribute_id:
-                      type: integer
-                    attribute_name:
-                      type: string
-                    attribute_location_name:
-                      type: string
-                    attribute_location_status:
-                      type: integer
-                    attribute_is_fulfillment:
-                      type: integer
-                    attribute_is_exclusive:
-                      type: integer
-                    attribute_settings:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          setting_name:
-                            type: string
-                          setting_value:
-                            type: string
-                          setting_description:
-                            type: string
-                          setting_type:
-                            type: string
-                    attribute_product_status_org:
-                      type: integer
-                    attribute_product_status_location:
-                      type: integer
