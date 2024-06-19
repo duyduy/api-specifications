@@ -213,6 +213,86 @@ paths:
                   results:
                     type: array
                     items:
+                      $ref: '#/paths/~1api~1v1~1search~1popular-searches/get/responses/200/content/application~1json/schema/properties/popularSearches/items'
+        '400':
+          description: Invalid input
+        '404':
+          description: No results found
+        '500':
+          description: Internal server error
+  /api/v1/search/filters:
+    get:
+      summary: Get All Search Filters
+      description: 'Retrieve all facets (filters) for rendering on the frontend, including categories, promotions, brands, and departments.'
+      parameters:
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/0'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/1'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/2'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/3'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/4'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/5'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/6'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/7'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/8'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/9'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/10'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/11'
+        - $ref: '#/paths/~1api~1v1~1search/get/parameters/12'
+      responses:
+        '200':
+          description: Successful retrieval of filters
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1api~1v1~1search/get/responses/200/content/application~1json/schema'
+        '400':
+          description: Invalid input
+        '404':
+          description: No results found
+        '500':
+          description: Internal server error
+  /api/v1/search/autocomplete:
+    get:
+      summary: Get Autocomplete Suggestions
+      description: 'Get autocomplete suggestions based on partial input, including detecting misspelled words and providing corrected spellings if needed.'
+      parameters:
+        - name: q
+          in: query
+          description: The partial input for which to retrieve suggestions
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Autocomplete suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+  /api/v1/search/popular-searches:
+    get:
+      summary: Get Popular Searches
+      description: 'Provides a list of commonly searched terms that appear as soon as the search field is activated. This helps users quickly find popular results, even before they start typing. It''s based on searches from all users, making it useful for first-time users to see what others are searching for.'
+      responses:
+        '200':
+          description: A list of popular searches
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  popularSearches:
+                    type: array
+                    items:
                       type: object
                       properties:
                         is_active:
@@ -444,85 +524,5 @@ paths:
                                 type: integer
                               attribute_product_status_location:
                                 type: integer
-        '400':
-          description: Invalid input
-        '404':
-          description: No results found
-        '500':
-          description: Internal server error
-  /api/v1/search/filters:
-    get:
-      summary: Get All Search Filters
-      description: 'Retrieve all facets (filters) for rendering on the frontend, including categories, promotions, brands, and departments.'
-      parameters:
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/0'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/1'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/2'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/3'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/4'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/5'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/6'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/7'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/8'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/9'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/10'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/11'
-        - $ref: '#/paths/~1api~1v1~1search/get/parameters/12'
-      responses:
-        '200':
-          description: Successful retrieval of filters
-          content:
-            application/json:
-              schema:
-                $ref: '#/paths/~1api~1v1~1search/get/responses/200/content/application~1json/schema'
-        '400':
-          description: Invalid input
-        '404':
-          description: No results found
-        '500':
-          description: Internal server error
-  /api/v1/search/autocomplete:
-    get:
-      summary: Get Autocomplete Suggestions
-      description: 'Get autocomplete suggestions based on partial input, including detecting misspelled words and providing corrected spellings if needed.'
-      parameters:
-        - name: q
-          in: query
-          description: The partial input for which to retrieve suggestions
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Autocomplete suggestions
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  suggestions:
-                    type: array
-                    items:
-                      type: string
-        '400':
-          description: Invalid input
-        '500':
-          description: Server error
-  /api/v1/search/popular-searches:
-    get:
-      summary: Get Popular Searches
-      description: 'Provides a list of commonly searched terms that appear as soon as the search field is activated. This helps users quickly find popular results, even before they start typing. It''s based on searches from all users, making it useful for first-time users to see what others are searching for.'
-      responses:
-        '200':
-          description: A list of popular searches
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  popularSearches:
-                    type: array
-                    items:
-                      type: string
         '500':
           description: Server error
