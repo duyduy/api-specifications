@@ -19,20 +19,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CartCalculationRequest'
+              $ref: '#/components/schemas/PromotionRequest'
       responses:
         '200':
           description: Successful response with cart calculations.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CartCalculationResponse'
+                $ref: '#/components/schemas/PromotionResponseBaseResponseObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: NCR promotional engine is down or an error occurred.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/InternalServerError'
 components:
   parameters:
     CarNumberInPath:
@@ -68,160 +70,221 @@ components:
           - application/json
       description: Specifies the format of the payload being sent. Must be 'application/json' for this endpoint.
   schemas:
-    CartCalculationRequest:
+    BasketOffer:
       type: object
       properties:
-        basket:
-          type: array
-          items:
-            $ref: '#/components/schemas/BasketItem'
-        promoCodes:
-          type: array
-          items:
-            type: string
-          description: A list of promotional codes applied to the cart.
-      required:
-        - basket
-    BasketItem:
-      type: object
-      properties:
-        itemCode:
+        offerName:
           type: string
-          description: 'Unique item code either UPC or SKU. If there is no item code, then an empty string should be sent.'
-        quantity:
-          type: object
-          properties:
-            unitType:
-              type: string
-              enum:
-                - SIMPLE_QUANTITY
-                - GRAMS
-                - GRAINS
-                - OUNCES
-                - POUNDS
-                - STONES
-                - KILOGRAMS
-                - TONS_LONG
-                - TONS_METRIC
-                - CENTILITER
-                - CUBIC_CENTIMETER
-                - CUBIC_DECIMETER
-                - CUBIC_DECAMETER
-                - CUBIC_FOOT
-                - CUBIC_INCH
-                - CUBIC_METER
-                - CUBIC_MILLIMETER
-                - CUBIC_YARD
-                - DECILITER
-                - DRAM
-                - GALLON_UK
-                - GALLON_US_DRY
-                - GALLON_US_LIQUID
-                - GILL_UK
-                - GILL_US
-                - IMPERIAL_GALLON
-                - JIGGER
-                - KILOLITER
-                - LITER
-                - MILLILITER
-                - OUNCE_UK_LIQUID
-                - OUNCE_US_LIQUID
-                - PINT_UK
-                - PINT_US_DRY
-                - PINT_US_LIQUID
-                - QUART_UK
-                - QUART_US_DRY
-                - QUART_US_LIQUID
-                - SHOT
-                - YARDS
-                - METERS
-                - SQUARE_YARDS
-                - SQUARE_METERS
-                - GENERIC_UNIT_SALES
-              description: 'Type of Unit of Measure , , example for 2 items of "$2.99 ea" we use "SIMPLE_QUANTITY"'
-            units:
-              type: number
-              description: Amount of quantity under consideration for transaction
-              example: 2
-          required:
-            - unitType
-            - units
-        unitPrice:
+          nullable: true
+        discountAmount:
           type: number
-          format: float
-          description: 'Unit selling price for Item , example "$2.99 ea" => the unitPrice is 2.99'
-          example: 2.99
-      required:
-        - itemCode
-    CartCalculationResponse:
+          format: double
+      additionalProperties: false
+    ItemOffer:
       type: object
       properties:
-        estimatedSubtotal:
+        offerName:
+          type: string
+          nullable: true
+        gtin:
+          type: string
+          nullable: true
+        discountAmount:
           type: number
-          format: float
-          description: The estimated subtotal before any discounts.
-        itemDiscounts:
+          format: double
+      additionalProperties: false
+    Product:
+      type: object
+      properties:
+        gtin:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+          format: int32
+        itemPrice:
           type: number
-          format: float
-          description: Total item discounts applied.
-        digitalDeals:
-          type: number
-          format: float
-          description: Total digital deals applied.
-        subtotalAfterDiscounts:
-          type: number
-          format: float
-          description: The subtotal after discounts are applied.
-        estimatedTotal:
-          type: number
-          format: float
-          description: The estimated total after all calculations.
+          format: double
+        qualifies:
+          $ref: '#/components/schemas/Qualify'
+      additionalProperties: false
+    PromotionRequest:
+      type: object
+      properties:
+        loyaltyId:
+          type: string
+          nullable: true
+        totals:
+          $ref: '#/components/schemas/Totals'
         items:
           type: array
           items:
-            $ref: '#/components/schemas/CalculatedItem'
-    CalculatedItem:
+            $ref: '#/components/schemas/Product'
+          nullable: true
+      additionalProperties: false
+    PromotionResponse:
       type: object
       properties:
-        dealType:
-          type: integer
-          description: |
-            The type of deal applied to the item:
-            - 2: Price
-            - 3: Price for multiple
-            - 4: Price weight
-            - 7: Percentage off
-            - 8: Buy X, Get Y
-            - 9: Everyday Low Price (FE labeling - no calculation)
-        itemId:
-          type: string
-          description: The unique identifier for the item.
-        quantity:
-          type: integer
-          description: The quantity of the item.
-        originalPrice:
-          type: number
-          format: float
-          description: The original price of the item before any discounts.
-        calculatedPrice:
-          type: number
-          format: float
-          description: The calculated price after applying promotions.
-        promotion:
-          type: string
-          description: 'The promotional offer applied to the item, e.g., "2 for $5.00".'
-        strikeThroughPrice:
-          type: number
-          format: float
-          description: The original price to be displayed with a strikethrough.
-        promoCodes:
+        basketOffers:
           type: array
           items:
-            type: string
-          description: A list of promotional codes applied to the item.
-    ErrorResponse:
+            $ref: '#/components/schemas/BasketOffer'
+          nullable: true
+        itemOffers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemOffer'
+          nullable: true
+      additionalProperties: false
+    PromotionResponseBaseResponseObject:
       type: object
       properties:
-        error:
+        status:
+          type: boolean
+        errorMessage:
           type: string
-          description: Error message.
+          nullable: true
+        errorCode:
+          $ref: '#/components/schemas/ResponseErrorCode'
+        correlationId:
+          type: string
+          format: uuid
+        data:
+          $ref: '#/components/schemas/PromotionResponse'
+      additionalProperties: false
+    Qualify:
+      type: object
+      properties:
+        rewards:
+          type: boolean
+        discount:
+          type: boolean
+      additionalProperties: false
+    Totals:
+      type: object
+      properties:
+        itemsOnly:
+          type: integer
+          format: int32
+        withoutTax:
+          type: integer
+          format: int32
+        withTax:
+          type: integer
+          format: int32
+      additionalProperties: false
+    ResponseErrorCode:
+      enum:
+        - 0
+        - 1
+        - 2
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 100
+        - 101
+        - 102
+        - 103
+        - 200
+        - 201
+        - 202
+        - 203
+        - 204
+        - 205
+        - 206
+        - 207
+        - 208
+        - 226
+        - 300
+        - 301
+        - 302
+        - 303
+        - 304
+        - 305
+        - 306
+        - 307
+        - 308
+        - 400
+        - 401
+        - 402
+        - 404
+        - 405
+        - 406
+        - 407
+        - 408
+        - 409
+        - 410
+        - 411
+        - 412
+        - 413
+        - 414
+        - 415
+        - 416
+        - 417
+        - 421
+        - 422
+        - 424
+        - 426
+        - 428
+        - 429
+        - 431
+        - 451
+        - 500
+        - 501
+        - 502
+        - 503
+        - 504
+        - 505
+        - 506
+        - 507
+        - 508
+        - 510
+      type: integer
+      format: int32
+    ErrorDetails:
+      type: object
+      properties:
+        Status:
+          type: boolean
+        Message:
+          type: string
+        ErrorCode:
+          $ref: '#/components/schemas/ResponseErrorCode'
+        Data:
+          type: object
+          items:
+            type: string
+        CorrelationId:
+          type: string
+          format: uuid
+          description: Unique Identifier used for tracing and logging purposes.
+  responses:
+    BadRequest:
+      description: Bad Request - The request was invalid or cannot be served. Check input format.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+    Unauthorized:
+      description: Unauthorized - The request requires user authentication.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+    NotFound:
+      description: Not Found - The server has not found anything matching the Request-URI.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+    InternalServerError:
+      description: Internal Server Error - The server encountered an unexpected condition.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
