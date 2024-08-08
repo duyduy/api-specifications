@@ -100,8 +100,7 @@ components:
           type: string
           nullable: true
         quantity:
-          type: integer
-          format: int32
+          $ref: '#/components/schemas/Quantity'
         itemPrice:
           type: number
           format: double
@@ -172,6 +171,16 @@ components:
         withTax:
           type: integer
           format: int32
+      additionalProperties: false
+    Quantity:
+      type: object
+      properties:
+        unitType:
+          type: string
+          nullable: true
+        units:
+          type: number
+          format: float
       additionalProperties: false
     ResponseErrorCode:
       enum:
