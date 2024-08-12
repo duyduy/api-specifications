@@ -258,17 +258,17 @@ components:
     ErrorDetails:
       type: object
       properties:
-        Status:
+        status:
           type: boolean
-        Message:
+        message:
           type: string
-        ErrorCode:
+        errorCode:
           $ref: '#/components/schemas/ResponseErrorCode'
-        Data:
+        data:
           type: object
           items:
             type: string
-        CorrelationId:
+        correlationId:
           type: string
           format: uuid
           description: Unique Identifier used for tracing and logging purposes.
@@ -278,22 +278,102 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorDetails'
+            type: object
+            properties:
+              status:
+                type: boolean
+                example: 'false'
+              message:
+                type: string
+                example: Bad Request - The request was invalid or cannot be served. Check input format.
+              errorCode:
+                type: integer
+                format: int32
+                description: '400'
+                example: '400'
+              data:
+                type: object
+                items:
+                  type: string
+                example: 'null'
+              correlationId:
+                type: string
+                format: uuid
     Unauthorized:
       description: Unauthorized - The request requires user authentication.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorDetails'
+            type: object
+            properties:
+              status:
+                type: boolean
+                example: 'false'
+              message:
+                type: string
+                example: Unauthorized - The request requires user authentication.
+              errorCode:
+                type: integer
+                format: int32
+                description: '401'
+                example: '401'
+              data:
+                type: object
+                items:
+                  type: string
+                example: 'null'
+              correlationId:
+                type: string
+                format: uuid
     NotFound:
       description: Not Found - The server has not found anything matching the Request-URI.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorDetails'
+            type: object
+            properties:
+              status:
+                type: boolean
+                example: 'false'
+              message:
+                type: string
+                example: Not Found - The server has not found anything matching the Request-URI.
+              errorCode:
+                type: integer
+                format: int32
+                description: '404'
+                example: '404'
+              data:
+                type: object
+                items:
+                  type: string
+                example: 'null'
+              correlationId:
+                type: string
+                format: uuid
     InternalServerError:
       description: Internal Server Error - The server encountered an unexpected condition.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorDetails'
+            type: object
+            properties:
+              status:
+                type: boolean
+                example: 'false'
+              message:
+                type: string
+                example: Internal Server Error - The server encountered an unexpected condition..
+              errorCode:
+                type: integer
+                format: int32
+                description: '500'
+                example: '500'
+              data:
+                type: object
+                items:
+                  type: string
+                example: 'null'
+              correlationId:
+                type: string
+                format: uuid
