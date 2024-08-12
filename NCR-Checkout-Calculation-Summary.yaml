@@ -100,7 +100,8 @@ components:
           type: string
           nullable: true
         quantity:
-          $ref: '#/components/schemas/Quantity'
+          type: integer
+          format: int32
         itemPrice:
           type: number
           format: double
@@ -171,16 +172,6 @@ components:
         withTax:
           type: integer
           format: int32
-      additionalProperties: false
-    Quantity:
-      type: object
-      properties:
-        unitType:
-          type: string
-          nullable: true
-        units:
-          type: number
-          format: float
       additionalProperties: false
     ResponseErrorCode:
       enum:
@@ -262,6 +253,7 @@ components:
           type: boolean
         Message:
           type: string
+          description: That is the test for description
         ErrorCode:
           $ref: '#/components/schemas/ResponseErrorCode'
         Data:
